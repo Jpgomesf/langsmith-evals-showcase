@@ -27,3 +27,24 @@ def make_exact_match(field: str = "label", *, feedback_key: str = "correct") -> 
 
     exact_match.__name__ = f"exact_match_{field}"
     return exact_match
+
+
+def make_recall_at_k(
+    retrieved_field: str = "doc_ids",
+    relevant_field: str = "doc_ids",
+    *,
+    feedback_key: str = "recall_at_k",
+) -> RowEvaluator:
+    """Build a retrieval evaluator: fraction of the relevant doc ids that were retrieved.
+
+    A heuristic check on an *intermediate* step (what the retriever surfaced),
+    independent of the generated answer. Empty reference set scores 1.0.
+    """
+
+    def recall_at_k(outputs: dict[str, Any], reference_outputs: dict[str, Any]) -> dict[str, Any]:
+        retrieved = set(outputs.get(retrieved_field) or [])
+        relevant = set(reference_outputs.get(relevant_field) or [])
+        score = 1.0 if not relevant else len(retrieved & relevant) / len(relevant)
+        return {"key": feedback_key, "score": score}
+
+    return recall_at_k

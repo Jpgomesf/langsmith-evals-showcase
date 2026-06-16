@@ -1,0 +1,12 @@
+{"inputs": {"question": "How much storage does the Nimbus Free tier include?"}, "outputs": {"answer": "The Free tier includes 15 GB of storage.", "doc_ids": ["pricing-free"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What does Nimbus Pro cost per user when billed annually?"}, "outputs": {"answer": "$12 per user per month billed annually.", "doc_ids": ["pricing-pro"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What is the maximum single file size on the Pro plan?"}, "outputs": {"answer": "50 GB.", "doc_ids": ["limits-filesize"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "Which regions can store Nimbus data?"}, "outputs": {"answer": "us-east (Virginia), eu-west (Ireland), and ap-south (Singapore).", "doc_ids": ["regions"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "How long are deleted files kept in the Trash by default?"}, "outputs": {"answer": "30 days, then they are permanently purged.", "doc_ids": ["retention"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What encryption does Nimbus use for data at rest?"}, "outputs": {"answer": "AES-256.", "doc_ids": ["encryption"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What is the API rate limit on the Business plan?"}, "outputs": {"answer": "5,000 requests per minute per API key.", "doc_ids": ["api-rate"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "What response time does Business priority support target?"}, "outputs": {"answer": "A 4-hour response target.", "doc_ids": ["support-sla"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "Can I make a shared link expire on a certain date, and on which plans?"}, "outputs": {"answer": "Yes, link expiry is available on Pro and Business plans.", "doc_ids": ["sharing"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "How much version history does the Business plan keep?"}, "outputs": {"answer": "180-day version history.", "doc_ids": ["pricing-business"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "Can a workspace change its storage region after creation?"}, "outputs": {"answer": "No, the region is chosen at creation and cannot be changed afterward.", "doc_ids": ["regions"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "Does the Free tier include version history?"}, "outputs": {"answer": "No, the Free tier does not include version history.", "doc_ids": ["pricing-free"]}, "metadata": {"split": "test"}}

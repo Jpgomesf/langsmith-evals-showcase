@@ -1,0 +1,10 @@
+{"id": "pricing-free", "text": "Nimbus offers a Free tier that includes 15 GB of storage, a maximum of 3 collaborators per workspace, and community support only. The Free tier does not include version history."}
+{"id": "pricing-pro", "text": "The Nimbus Pro plan costs $12 per user per month billed annually, or $15 per user per month billed monthly. Pro includes 2 TB of storage per user, unlimited collaborators, and 30-day version history."}
+{"id": "pricing-business", "text": "The Nimbus Business plan costs $22 per user per month and adds 5 TB of pooled storage, advanced audit logs, SSO via SAML, and 180-day version history."}
+{"id": "limits-filesize", "text": "The maximum single file size on Nimbus is 50 GB on Pro and Business plans, and 2 GB on the Free tier. Uploads above the limit are rejected with error code NM-413."}
+{"id": "regions", "text": "Nimbus stores data in three regions: us-east (Virginia), eu-west (Ireland), and ap-south (Singapore). A workspace's region is chosen at creation and cannot be changed afterward."}
+{"id": "retention", "text": "Deleted files on Nimbus are kept in the Trash for 30 days, after which they are permanently purged. Business-plan admins can extend Trash retention up to 90 days."}
+{"id": "encryption", "text": "Nimbus encrypts all data at rest with AES-256 and in transit with TLS 1.3. Business customers can optionally supply their own encryption keys via the BYOK feature."}
+{"id": "api-rate", "text": "The Nimbus REST API is rate-limited to 1,000 requests per minute per API key on Pro, and 5,000 requests per minute on Business. Exceeding the limit returns HTTP 429."}
+{"id": "support-sla", "text": "Nimbus Pro includes email support with a 24-hour response target. Business includes priority support with a 4-hour response target and a 99.9% uptime SLA."}
+{"id": "sharing", "text": "Nimbus links can be shared as view-only or edit, and can be password-protected or set to expire on a chosen date. Link expiry is available on Pro and Business plans only."}

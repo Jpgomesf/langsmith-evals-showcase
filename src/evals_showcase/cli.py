@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 from .scenarios.classify import experiment as classify
 from .scenarios.extract import experiment as extract
+from .scenarios.rag import experiment as rag
 
 app = typer.Typer(add_completion=False, help="Run the LangSmith eval-gym scenarios.")
 
@@ -18,6 +19,7 @@ app = typer.Typer(add_completion=False, help="Run the LangSmith eval-gym scenari
 REGISTRY = {
     "classify": classify,
     "extract": extract,
+    "rag": rag,
 }
 
 
