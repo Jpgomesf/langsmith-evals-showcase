@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Environments
+.venv/
+.env
+.env.local
+
+# uv
+# (uv.lock IS committed — it pins the reproducible environment)
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local model caches (fastembed downloads ONNX models here on first run)
+.fastembed_cache/
+
+# OS
+.DS_Store

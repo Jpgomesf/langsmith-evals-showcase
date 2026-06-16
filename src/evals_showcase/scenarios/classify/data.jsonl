@@ -1,0 +1,24 @@
+{"inputs": {"text": "I was charged twice for my subscription this month, can I get a refund?"}, "outputs": {"label": "billing"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Why did my invoice jump from $20 to $45? I didn't change my plan."}, "outputs": {"label": "billing"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Can I switch my payment method from PayPal to a credit card?"}, "outputs": {"label": "billing"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Please cancel my plan and refund the last payment."}, "outputs": {"label": "billing"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "The app crashes every time I try to upload a photo."}, "outputs": {"label": "technical_support"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "I keep getting a 500 error when I open the dashboard."}, "outputs": {"label": "technical_support"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Exports have been stuck on 'processing' for two hours and never finish."}, "outputs": {"label": "technical_support"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "The mobile notifications stopped working after the latest update."}, "outputs": {"label": "technical_support"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "I can't log in, it says my password is incorrect but I'm sure it's right."}, "outputs": {"label": "account_access"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "I'm locked out after too many login attempts, how do I get back in?"}, "outputs": {"label": "account_access"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "My 2FA device broke and now I can't receive the verification code."}, "outputs": {"label": "account_access"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "How do I reset my password? The reset email never arrives."}, "outputs": {"label": "account_access"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "It would be great if you could add a dark mode to the web app."}, "outputs": {"label": "feature_request"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Any chance of adding CSV export for the reports section?"}, "outputs": {"label": "feature_request"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Please consider supporting multiple workspaces under one account."}, "outputs": {"label": "feature_request"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Can you build an integration with Slack? That would save us a lot of time."}, "outputs": {"label": "feature_request"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "This is the third time support has ignored my ticket. Absolutely unacceptable."}, "outputs": {"label": "complaint"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Your agent was rude and hung up on me. I'm very disappointed."}, "outputs": {"label": "complaint"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "I've been a customer for years and the service keeps getting worse."}, "outputs": {"label": "complaint"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Waiting 45 minutes on hold is ridiculous and I'm done with this."}, "outputs": {"label": "complaint"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Hi there! Just wanted to say thanks for the quick help yesterday."}, "outputs": {"label": "other"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Hello, is anyone there?"}, "outputs": {"label": "other"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "What are your office hours over the holidays?"}, "outputs": {"label": "other"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Good morning, hope you're having a great day."}, "outputs": {"label": "other"}, "metadata": {"split": "test"}}

@@ -1,0 +1,63 @@
+[project]
+name = "evals-showcase"
+version = "0.1.0"
+description = "A multi-scenario eval gym demonstrating the full surface of LangSmith evaluation"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "João Pedro Gomes Ferreira" }]
+license = { text = "MIT" }
+dependencies = [
+    "langsmith>=0.3.45",
+    "langchain>=0.3.25",
+    "langchain-core>=0.3.84",
+    "langchain-anthropic>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langgraph>=1.0.0",
+    "fastembed>=0.4.0",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "typer>=0.15",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+evals = "evals_showcase.cli:app"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "pytest>=8.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/evals_showcase"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Sensible default set: pycodestyle, pyflakes, isort, pyupgrade, bugbear.
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Deterministic unit tests run by default; live eval gates are opt-in via `-m live`.
+# (The `langsmith` marker name is reserved by LangSmith's own pytest plugin.)
+addopts = "-m 'not live'"
+markers = [
+    "live: evaluation gates that hit LangSmith + a model provider (require credentials)",
+]
