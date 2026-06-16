@@ -176,7 +176,7 @@ Scenarios ship **incrementally**; the shared eval machinery and the first scenar
 | `extract` — multi-key code evaluator | ✅ |
 | `rag` — retrieval metrics + LLM-judges | ✅ |
 | `agent` — trajectory evaluation | ✅ |
-| `generate` — Prompt Hub + pairwise comparison | ⏳ planned |
+| `generate` — Prompt Hub + pairwise comparison | ✅ |
 | Online evals (simulator + automation rule) | ⏳ planned |
 | Annotation queue (SDK) | ⏳ planned |
 | GitHub Actions regression gate | ✅ |

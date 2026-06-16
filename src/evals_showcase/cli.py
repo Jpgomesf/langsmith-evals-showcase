@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from .scenarios.agent import experiment as agent
 from .scenarios.classify import experiment as classify
 from .scenarios.extract import experiment as extract
+from .scenarios.generate import experiment as generate
 from .scenarios.rag import experiment as rag
 
 app = typer.Typer(add_completion=False, help="Run the LangSmith eval-gym scenarios.")
@@ -22,6 +23,7 @@ REGISTRY = {
     "extract": extract,
     "rag": rag,
     "agent": agent,
+    "generate": generate,
 }
 
 
