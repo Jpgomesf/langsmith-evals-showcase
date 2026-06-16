@@ -66,10 +66,10 @@ def run(
     scenario: str = typer.Argument(..., help="Scenario name to evaluate."),
     repetitions: int = typer.Option(1, "--repetitions", "-r", help="Runs per example."),
 ) -> None:
-    """Run a scenario's offline evaluation experiment."""
-    module = _resolve(scenario)[scenario]
-    module.run_experiment(repetitions=repetitions)  # type: ignore[attr-defined]
-    typer.echo(f"experiment submitted for '{scenario}' — view results in LangSmith.")
+    """Run a scenario's offline evaluation experiment (or 'all')."""
+    for name, module in _resolve(scenario).items():
+        module.run_experiment(repetitions=repetitions)  # type: ignore[attr-defined]
+        typer.echo(f"experiment submitted for '{name}' — view results in LangSmith.")
 
 
 @app.command()

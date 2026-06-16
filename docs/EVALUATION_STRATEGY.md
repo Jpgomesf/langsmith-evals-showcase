@@ -67,7 +67,7 @@ constraints.
   extraction.
 - **Strengths.** Inherits everything good about heuristics (cheap, deterministic) while
   expressing real business rules. Can emit **multiple feedback keys from one evaluator**
-  (e.g. `json-validity`, per-field match, aggregate `field-accuracy`), giving granular,
+  (e.g. `all_fields_present`, per-field match, aggregate `field_accuracy`), giving granular,
   debuggable signal.
 - **Weaknesses.** You maintain it. Logic bugs in the evaluator masquerade as model
   regressions. Coverage is only as good as the cases you thought of.
@@ -439,29 +439,23 @@ Evaluators live under `src/evals_showcase/evaluators/`; each scenario under
 `src/evals_showcase/scenarios/<name>/` ships an `app.py`, `data.jsonl`, and
 `experiment.py`.
 
-> **Build status (read this before clicking a path).** This repo is built scenario by
-> scenario. Rows marked **_(planned)_** describe the locked target layout but are **not yet
-> committed** — the file or scenario directory does not exist on `main` yet, so its
-> deep-link will 404 until that scenario lands. Unmarked rows are live today. **Shipped
-> now:** `evaluators/heuristic.py`, `evaluators/summary.py`, the **classify** scenario, and
-> `tests/`. Everything else (the `extract`, `rag`, `agent`, `generate` scenarios, plus
-> `evaluators/judges.py`, `evaluators/trajectory.py`, `online.py`, `annotation.py`) is
-> planned. This document doubles as the spec for that remaining work.
+All five scenarios and both cross-cutting pieces are committed and live; every
+path referenced below exists in the repo.
 
 | Strategy | Where it's demonstrated | Status |
 |---|---|---|
 | Heuristic exact-match | **classify** — `evaluators/heuristic.py`, exact-match on the label against a closed intent set. | Live |
-| Statistical / summary metrics | **classify** — `evaluators/summary.py`: macro-F1, precision/recall, confusion matrix as LangSmith **summary evaluators**; `num_repetitions` drives variance reporting. (No calibration — the single-label app emits no confidence; see §1d.) | Live |
-| Custom code / multi-key programmatic | **extract** — one CODE evaluator emits `json-validity`, per-field normalized match, numeric tolerance, and aggregate `field-accuracy` (the `list[dict]` → multiple-feedback pattern). | _(planned)_ |
-| Execution-based / functional (retrieval hit) | **rag** — heuristic **recall@k** over committed corpus doc ids (fastembed, cosine). **agent** — tool-call success as a functional check. | _(planned)_ |
-| LLM-as-judge (reference-free) | **rag** — faithfulness/groundedness and context-relevance judges (`evaluators/judges.py`), structured Pydantic grades over the retrieved context. **Set `JUDGE_MODEL` to a different provider family than `APP_MODEL`** (see §2). | _(planned)_ |
-| LLM-as-judge (reference-based) | **rag** — answer-correctness vs. reference (graded as two-way entailment, not string similarity; see §2). **agent** — final-answer judge. | _(planned)_ |
-| Trajectory / process eval | **agent** — `evaluators/trajectory.py`: order-insensitive **tool-set / required-tool** selection over the LangGraph run tree (the robust heuristic), with path-reasonableness left to an optional judge — *not* a committed gold tool sequence. | _(planned)_ |
-| Pairwise / relative judge | **generate** — `evaluate_comparative()` across two Prompt Hub prompt versions, `randomize_order=True` to debias position. | _(planned)_ |
-| Reference-free rubric judge (multi-criteria) | **generate** — G-Eval-style categorical + continuous rubric feedback. | _(planned)_ |
-| Human evaluation | **cross-cutting** — `annotation.py` creates an annotation queue via the SDK and enqueues sampled runs; grading happens in the LangSmith UI (used to validate judges). | _(planned)_ |
-| Online / production eval | **cross-cutting** — `online.py` traffic simulator emits `@traceable` runs to a project; an online evaluator / automation rule is configured in the LangSmith UI (click-path documented in `docs/`). | _(planned)_ |
-| CI regression gate | **cross-cutting** — `tests/` with `@pytest.mark.langsmith` plus pure-unit evaluator tests, wired into GitHub Actions: deterministic heuristics + summary thresholds gate every commit. | Live |
+| Statistical / summary metrics | **classify** — `evaluators/summary.py`: accuracy, macro-F1, per-class precision/recall as LangSmith **summary evaluators**; `num_repetitions` drives variance reporting. (No calibration — the single-label app emits no confidence; see §1d.) | Live |
+| Custom code / multi-key programmatic | **extract** — one CODE evaluator emits `all_fields_present`, per-field normalized match, numeric tolerance, and aggregate `field_accuracy` (the `list[dict]` → multiple-feedback pattern). | Live |
+| Execution-based / functional (retrieval hit) | **rag** — heuristic **recall@k** over committed corpus doc ids (fastembed, cosine). **agent** — tool-call success as a functional check. | Live |
+| LLM-as-judge (reference-free) | **rag** — faithfulness/groundedness and context-relevance judges (`evaluators/judges.py`), structured Pydantic grades over the retrieved context. **Set `JUDGE_MODEL` to a different provider family than `APP_MODEL`** (see §2). | Live |
+| LLM-as-judge (reference-based) | **rag** — answer-correctness vs. reference (graded as two-way entailment, not string similarity; see §2). **agent** — final-answer judge. | Live |
+| Trajectory / process eval | **agent** — `evaluators/trajectory.py`: order-insensitive **tool-set / required-tool** selection over the LangGraph run tree (the robust heuristic), with path-reasonableness left to an optional judge — *not* a committed gold tool sequence. | Live |
+| Pairwise / relative judge | **generate** — `evaluate_comparative()` across two Prompt Hub prompt versions, `randomize_order=True` to debias position. | Live |
+| Reference-free rubric judge (multi-criteria) | **generate** — G-Eval-style categorical + continuous rubric feedback. | Live |
+| Human evaluation | **cross-cutting** — `annotation.py` creates an annotation queue via the SDK and enqueues sampled runs; grading happens in the LangSmith UI (used to validate judges). | Live |
+| Online / production eval | **cross-cutting** — `online.py` traffic simulator emits `@traceable` runs to a project; an online evaluator / automation rule is configured in the LangSmith UI (click-path documented in `docs/`). | Live |
+| CI regression gate | **cross-cutting** — `tests/` with a custom `@pytest.mark.live` marker plus pure-unit evaluator tests, wired into GitHub Actions: deterministic heuristics + summary thresholds gate every commit. | Live |
 
 The design principle threading all of it: **deterministic checks form the floor, judges
 add the ceiling, summary metrics turn rows into decisions, and humans keep the judges

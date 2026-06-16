@@ -15,7 +15,7 @@ Rows are LangSmith capabilities; columns are the five apps-under-test plus the c
 | Heuristic exact-match evaluator | ● | | | | | |
 | Multi-key **code** evaluator (one fn, many feedback keys) | | ● | | | | |
 | Numeric-tolerance / normalized field match | | ● | | | | |
-| **Summary** evaluators (macro-F1, precision/recall, confusion matrix) | ● | | | | | |
+| **Summary** evaluators (accuracy, macro-F1, precision/recall) | ● | | | | | |
 | `num_repetitions` variance / noise reporting | ● | | | | | |
 | Retrieval recall@k (heuristic over intermediate context) | | | ● | | | |
 | **Custom LLM-as-judge** (structured Pydantic grade) | | | ● | ● | ● | |
@@ -38,17 +38,17 @@ Rows are LangSmith capabilities; columns are the five apps-under-test plus the c
 
 **Eval-gym layout.** Each scenario is a self-contained package under `src/evals_showcase/scenarios/<name>/` with an `app.py` (the thing being evaluated), a `data.jsonl` (the dataset), and an `experiment.py` (dataset seeding + the `evaluate()` wiring). Shared machinery — config, model factories, embeddings, dataset helpers, and the evaluator library — lives one level up and is reused across scenarios. New scenarios register themselves in `cli.py` (`REGISTRY`) and immediately become available to `evals seed` / `evals run`.
 
-**Display is the LangSmith UI.** This repo deliberately builds **no** custom dashboard or report generator. Experiments, feedback charts, comparison views, traces, and the confusion matrix all render in LangSmith; the README narrates results with screenshots and deep-links. The code stays focused on eval craft.
+**Display is the LangSmith UI.** This repo deliberately builds **no** custom dashboard or report generator. Experiments, feedback charts, comparison views, and traces all render in LangSmith; the README narrates results with screenshots and deep-links. The code stays focused on eval craft.
 
 ---
 
 ## The five scenarios
 
 ### 1. `classify` — intent / category classifier
-A single structured-output LLM call that labels an utterance. The reference scenario for **dataset mechanics and aggregate metrics**: train/test splits, a row-level heuristic exact-match evaluator, and **summary evaluators** computing macro-F1, per-class precision/recall, and a confusion matrix. Runs with `num_repetitions` to surface variance, and is gated in CI via the `live` pytest marker.
+A single structured-output LLM call that labels an utterance. The reference scenario for **dataset mechanics and aggregate metrics**: train/test splits, a row-level heuristic exact-match evaluator, and **summary evaluators** computing macro-F1, per-class precision/recall, and accuracy. Runs with `num_repetitions` to surface variance, and is gated in CI via the `live` pytest marker.
 
 ### 2. `extract` — text → JSON field extraction
-Parses transaction-style text into a Pydantic model. Spotlights a **custom code evaluator that emits multiple feedback keys from one function** — `json-validity`, per-field normalized match, numeric tolerance on amounts, and an aggregate `field-accuracy` — returned as a `list[dict]` so each surfaces as its own feedback metric in the UI.
+Parses transaction-style text into a Pydantic model. Spotlights a **custom code evaluator that emits multiple feedback keys from one function** — `all_fields_present`, per-field normalized match, numeric tolerance on amounts, and an aggregate `field_accuracy` — returned via the `{"results": [...]}` envelope so each surfaces as its own feedback metric in the UI.
 
 ### 3. `rag` — tiny retriever + answer generation
 A small in-memory retriever (local `fastembed` embeddings, cosine over a committed corpus) feeding answer generation. Combines a **heuristic retrieval recall@k** over the intermediate retrieved context with **custom LLM-as-judge** evaluators for faithfulness/groundedness, reference-based answer-correctness, and context-relevance — demonstrating evaluation of both intermediate and final outputs.
@@ -115,9 +115,10 @@ langsmith-evals-showcase/
 │   ├── embeddings.py        # fastembed local embeddings (rag)
 │   ├── datasets.py          # idempotent dataset create / version / split
 │   ├── evaluators/
-│   │   ├── heuristic.py     # exact-match, field match, recall@k
+│   │   ├── heuristic.py     # exact-match, recall@k
 │   │   ├── judges.py        # custom LLM-as-judge (structured Pydantic grades)
-│   │   ├── summary.py       # macro-F1, precision/recall, confusion matrix
+│   │   ├── summary.py       # accuracy, macro-F1, precision/recall
+│   │   ├── code.py          # multi-key field-extraction evaluator
 │   │   └── trajectory.py    # agent tool-sequence / run-tree evaluators
 │   ├── scenarios/
 │   │   ├── classify/        # app.py · data.jsonl · experiment.py
@@ -144,7 +145,7 @@ langsmith-evals-showcase/
 ## Documentation
 
 - **[docs/EVALUATION_STRATEGY.md](docs/EVALUATION_STRATEGY.md) — the centerpiece.** The opinionated walkthrough of *why* each scenario evaluates what it does: when to reach for heuristic vs. summary vs. LLM-judge evaluators, how to think about variance and repetitions, judge-design pitfalls, pairwise vs. absolute grading, and where `openevals` would slot in as an alternative (it is referenced, **not** a dependency — judges here are custom). Start here.
-- **[docs/LANGSMITH_API_REFERENCE.md](docs/LANGSMITH_API_REFERENCE.md)** — a concise, version-grounded cheat-sheet of the exact LangSmith APIs this repo uses, every signature confirmed by introspection against the pinned `langsmith==0.3.45`.
+- **[docs/LANGSMITH_API_REFERENCE.md](docs/LANGSMITH_API_REFERENCE.md)** — a concise, version-grounded cheat-sheet of the exact LangSmith APIs this repo uses, every signature confirmed by introspection against the locked `langsmith==0.8.16` (see `uv.lock`).
 - **[docs/ONLINE_AND_HUMAN_EVAL.md](docs/ONLINE_AND_HUMAN_EVAL.md)** — offline vs. online evaluation, attaching an online evaluator rule to production traffic, and using annotation queues to calibrate the automated judges with human review.
 
 ---
@@ -157,7 +158,7 @@ Experiments live in **LangSmith** — that is the display layer, by design. Each
 
 | View | Screenshot |
 |---|---|
-| `classify` — confusion matrix + macro-F1 summary | _TODO: `docs/images/classify-summary.png`_ |
+| `classify` — macro-F1 + per-class precision/recall | _TODO: `docs/images/classify-summary.png`_ |
 | `extract` — per-field feedback keys on a single experiment | _TODO: `docs/images/extract-feedback.png`_ |
 | `rag` — LLM-judge faithfulness + recall@k | _TODO: `docs/images/rag-judges.png`_ |
 | `agent` — trajectory / run-tree evaluation | _TODO: `docs/images/agent-trajectory.png`_ |

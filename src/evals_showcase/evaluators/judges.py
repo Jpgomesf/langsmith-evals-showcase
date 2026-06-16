@@ -10,7 +10,6 @@ an LLM-judge is the right tool and how to control its biases.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Callable
 from typing import Any
 
@@ -127,14 +126,14 @@ def make_pairwise_judge(
 ) -> ComparativeEvaluator:
     """Build a comparative evaluator that picks the better of two experiment runs.
 
-    Mitigates position bias by deterministically varying which candidate is shown
-    first (keyed on the example id), so order effects cancel across the dataset.
+    Position bias is mitigated upstream by ``evaluate_comparative(..., randomize_order=True)``,
+    which shuffles the order runs are presented in; the winner is mapped back to the
+    real run id, so this stays correct regardless of order. Assumes one run per
+    experiment (``num_repetitions=1``).
     """
 
     def comparative(runs: list[Any], example: Any) -> ComparisonEvaluationResult:
         run_a, run_b = runs[0], runs[1]
-        swap = int(hashlib.md5(str(example.id).encode()).hexdigest(), 16) % 2 == 1
-        first, second = (run_b, run_a) if swap else (run_a, run_b)
         model = model_factory().with_structured_output(PairwiseChoice)
         choice = model.invoke(
             [
@@ -143,14 +142,14 @@ def make_pairwise_judge(
                     "human",
                     render_pair(
                         dict(example.inputs or {}),
-                        dict(first.outputs or {}),
-                        dict(second.outputs or {}),
+                        dict(run_a.outputs or {}),
+                        dict(run_b.outputs or {}),
                     ),
                 ),
             ]
         )
         assert isinstance(choice, PairwiseChoice)
-        winner, loser = (first, second) if choice.winner == 1 else (second, first)
+        winner, loser = (run_a, run_b) if choice.winner == 1 else (run_b, run_a)
         return ComparisonEvaluationResult(
             key=key, scores={winner.id: 1, loser.id: 0}, comment=choice.reasoning
         )

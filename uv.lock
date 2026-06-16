@@ -251,17 +251,17 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fastembed", specifier = ">=0.4.0" },
-    { name = "langchain", specifier = ">=0.3.25" },
-    { name = "langchain-anthropic", specifier = ">=0.3.0" },
-    { name = "langchain-core", specifier = ">=0.3.84" },
-    { name = "langchain-openai", specifier = ">=0.2.0" },
-    { name = "langgraph", specifier = ">=1.0.0" },
-    { name = "langsmith", specifier = ">=0.3.45" },
-    { name = "pydantic", specifier = ">=2.10" },
-    { name = "pydantic-settings", specifier = ">=2.7" },
-    { name = "python-dotenv", specifier = ">=1.0" },
-    { name = "typer", specifier = ">=0.15" },
+    { name = "fastembed", specifier = ">=0.8,<0.9" },
+    { name = "langchain", specifier = ">=1.3,<2" },
+    { name = "langchain-anthropic", specifier = ">=1.4,<2" },
+    { name = "langchain-core", specifier = ">=1.4,<2" },
+    { name = "langchain-openai", specifier = ">=1.3,<2" },
+    { name = "langgraph", specifier = ">=1.2,<2" },
+    { name = "langsmith", specifier = ">=0.8.16,<0.9" },
+    { name = "pydantic", specifier = ">=2.10,<3" },
+    { name = "pydantic-settings", specifier = ">=2.7,<3" },
+    { name = "python-dotenv", specifier = ">=1.0,<2" },
+    { name = "typer", specifier = ">=0.15,<1" },
 ]
 
 [package.metadata.requires-dev]

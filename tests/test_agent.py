@@ -20,6 +20,16 @@ def test_calculate_rejects_non_arithmetic():
         calculate("__import__('os').system('echo hi')")
 
 
+def test_calculate_zero_division_is_friendly():
+    assert calculate("1 / 0") == "undefined (division by zero)"
+
+
+def test_calculate_rejects_huge_exponent():
+    # Guards against huge-integer DoS like 10**10**10.
+    with pytest.raises(ValueError):
+        calculate("10 ** 999")
+
+
 def test_is_subsequence():
     assert is_subsequence(["a", "b"], ["a", "x", "b"]) is True
     assert is_subsequence(["b", "a"], ["a", "x", "b"]) is False

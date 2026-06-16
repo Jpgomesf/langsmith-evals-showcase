@@ -38,7 +38,11 @@ PROMPT_V2 = ChatPromptTemplate.from_messages(
 
 
 def push_prompts(client: Client) -> None:
-    """Push both prompt versions to the Hub, tagged ``v1`` and ``v2`` (idempotent-ish)."""
+    """Push both prompt versions to the Hub, commit-tagged ``v1`` and ``v2``.
+
+    ``commit_tags`` (not ``tags``, which is prompt-level metadata) is what makes
+    ``pull_prompt("name:v1")`` resolve a specific commit.
+    """
     name = prompt_name()
-    client.push_prompt(name, object=PROMPT_V1, tags=["v1"])
-    client.push_prompt(name, object=PROMPT_V2, tags=["v2"])
+    client.push_prompt(name, object=PROMPT_V1, commit_tags=["v1"])
+    client.push_prompt(name, object=PROMPT_V2, commit_tags=["v2"])

@@ -27,12 +27,18 @@ _OPS: dict[type[ast.AST], Any] = {
 }
 
 
+_MAX_EXPONENT = 100  # cap to prevent huge-integer DoS like 10**10**10
+
+
 def _safe_eval(node: ast.AST) -> float:
     """Evaluate a parsed arithmetic expression, allowing numbers and +-*/%** only."""
     if isinstance(node, ast.Constant) and isinstance(node.value, int | float):
         return node.value
     if isinstance(node, ast.BinOp) and type(node.op) in _OPS:
-        return _OPS[type(node.op)](_safe_eval(node.left), _safe_eval(node.right))
+        left, right = _safe_eval(node.left), _safe_eval(node.right)
+        if isinstance(node.op, ast.Pow) and abs(right) > _MAX_EXPONENT:
+            raise ValueError("exponent too large")
+        return _OPS[type(node.op)](left, right)
     if isinstance(node, ast.UnaryOp) and type(node.op) in _OPS:
         return _OPS[type(node.op)](_safe_eval(node.operand))
     raise ValueError("unsupported expression")
@@ -40,7 +46,10 @@ def _safe_eval(node: ast.AST) -> float:
 
 def calculate(expression: str) -> str:
     """Evaluate a basic arithmetic expression, returning a tidy string result."""
-    result = _safe_eval(ast.parse(expression, mode="eval").body)
+    try:
+        result = _safe_eval(ast.parse(expression, mode="eval").body)
+    except ZeroDivisionError:
+        return "undefined (division by zero)"
     return str(int(result)) if result == int(result) else str(result)
 
 

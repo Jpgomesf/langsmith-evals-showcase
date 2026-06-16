@@ -51,20 +51,27 @@ def test_rubric_verdict_fails_below_pass_mark():
     assert by_key["verdict"]["value"] == "fail"
 
 
-def test_pairwise_judge_returns_one_winner():
+def _pairwise(winner: int) -> Any:
     judge = make_pairwise_judge(
         "preference",
         "INSTRUCTIONS",
         lambda inputs, first, second: "prompt",
-        model_factory=lambda: _StubModel(PairwiseChoice(reasoning="cleaner", winner=1)),
+        model_factory=lambda: _StubModel(PairwiseChoice(reasoning="because", winner=winner)),
     )
     runs = [
         SimpleNamespace(id="run-a", outputs={"summary": "A"}),
         SimpleNamespace(id="run-b", outputs={"summary": "B"}),
     ]
     example = SimpleNamespace(id="ex-1", inputs={"document": "d"})
-    result = judge(runs, example)
+    return judge(runs, example)
+
+
+def test_pairwise_winner_one_maps_to_first_run():
+    result = _pairwise(winner=1)
     assert isinstance(result, ComparisonEvaluationResult)
     assert result.key == "preference"
-    assert sorted(result.scores.values()) == [0, 1]
-    assert set(result.scores.keys()) == {"run-a", "run-b"}
+    assert result.scores == {"run-a": 1, "run-b": 0}
+
+
+def test_pairwise_winner_two_maps_to_second_run():
+    assert _pairwise(winner=2).scores == {"run-a": 0, "run-b": 1}

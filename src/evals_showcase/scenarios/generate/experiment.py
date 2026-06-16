@@ -80,5 +80,6 @@ def run_experiment(*, repetitions: int = 1, max_concurrency: int = 4) -> dict[st
         (exp_v1.experiment_name, exp_v2.experiment_name),
         evaluators=[pairwise_judge],
         experiment_prefix=f"{SCENARIO}-pairwise",
+        randomize_order=True,  # cancel position bias in the pairwise judge
     )
     return {"v1": exp_v1, "v2": exp_v2, "comparison": comparison}

@@ -35,7 +35,7 @@
 | D7 | A reusable evaluators library (`evaluators/heuristic.py`, `judges.py`, `summary.py`, `trajectory.py`) shared across scenarios. | DRY; one place to read every evaluator contract; scenarios compose from it. |
 | D8 | A single typer CLI (`seed | run <scenario> | run-all | pairwise | online | annotate`) is the entry point for every operation. | One discoverable surface; no scattered `__main__` scripts. |
 | D9 | Online-eval automation rule is created in the LangSmith UI; everything else (traffic, feedback, queue) is SDK-driven. | The automation/rules tab cannot be fully scripted in the pinned SDK; the split is documented honestly with screenshots and a click-path. |
-| D10 | Pinned stack: `langsmith==0.3.45`, `langchain==0.3.25`, `langchain-core==0.3.84`, `langgraph==1.1.6`, `langchain-openai==1.1.13`, `pydantic==2.12.5`, `pydantic-settings==2.13.1`, `pytest==8.4.2`; to add `langchain-anthropic`, `fastembed`, `typer`, `ruff`, `mypy`. | The API reference is authoritative for these versions only; behavior changed across the 0.2 → 0.3 line. |
+| D10 | Pinned stack: `langsmith==0.8.16`, `langchain==1.3.9`, `langchain-core==1.4.7`, `langgraph==1.2.5`, `langchain-openai==1.3.2`, `pydantic==2.13.4`, `pydantic-settings==2.14.1`, `pytest==9.1.0`; to add `langchain-anthropic`, `fastembed`, `typer`, `ruff`, `mypy`. | The API reference is authoritative for these versions only; behavior shifts across major versions; see `uv.lock`. |
 
 ## Architecture
 
@@ -90,15 +90,15 @@ Each scenario folder is self-contained: `app.py` is the app-under-test (a plain 
 
 Datasets are committed as JSONL files (one example per line: `{"inputs": {...}, "outputs": {...}, "split": [...]}`) and loaded by `datasets.py` so that re-running `seed` is safe:
 
-1. **Guard the dataset by name.** `create_dataset` raises on a duplicate name in 0.3.45, so seeding first checks `client.has_dataset(dataset_name=...)` and calls `client.create_dataset(...)` only when absent.
-2. **Upsert examples with stable IDs.** Bulk-upsert with `client.create_examples(dataset_name=..., examples=[...])` using the keyword-only `examples=` shape required by 0.3.45. Each example carries a stable, deterministic `id` (a UUIDv5 derived from `dataset_name` + a per-line key) so re-seeding upserts the same rows instead of appending duplicates — `create_examples` returns an `UpsertExamplesResponse`. Without explicit IDs the call would append new examples on every run.
+1. **Guard the dataset by name.** `create_dataset` raises on a duplicate name in 0.8.16, so seeding first checks `client.has_dataset(dataset_name=...)` and calls `client.create_dataset(...)` only when absent.
+2. **Upsert examples with stable IDs.** Bulk-upsert with `client.create_examples(dataset_name=..., examples=[...])` using the keyword-only `examples=` shape required by 0.8.16. Each example carries a stable, deterministic `id` (a UUIDv5 derived from `dataset_name` + a per-line key) so re-seeding upserts the same rows instead of appending duplicates — `create_examples` returns an `UpsertExamplesResponse`. Without explicit IDs the call would append new examples on every run.
 3. **Tag splits per example** via `split: str | list[str]` (e.g. `["train"]` / `["test"]`); split-scoped runs read them with `client.list_examples(dataset_name=..., splits=["test"])`.
 
 The committed JSONL is the source of truth, so the eval set versions alongside the code. For reproducible pinned runs, experiments may pin a dataset version at read time with `list_examples(..., as_of=<version>)`.
 
 ### Reusable evaluators library
 
-All evaluators follow the 0.3.45 name-resolved argument contract (params chosen from `run, example, inputs, outputs, reference_outputs, attachments`; for comparative, `runs, example, inputs, outputs, reference_outputs`; for summary, `runs, examples, inputs, outputs, reference_outputs`). Return-value coercion: `bool|int|float -> {"score": x}`, `str -> {"value": x}`, `list[dict] -> {"results": [...]}` (multiple feedback keys), `dict`/`EvaluationResult` passthrough; empty/falsy raises.
+All evaluators follow the 0.8.16 name-resolved argument contract (params chosen from `run, example, inputs, outputs, reference_outputs, attachments`; for comparative, `runs, example, inputs, outputs, reference_outputs`; for summary, `runs, examples, inputs, outputs, reference_outputs`). Return-value coercion: `bool|int|float -> {"score": x}`, `str -> {"value": x}`, `list[dict] -> {"results": [...]}` (multiple feedback keys), `dict`/`EvaluationResult` passthrough; empty/falsy raises.
 
 - **`heuristic.py`** (row-level) — `exact_match(outputs, reference_outputs)`; `recall_at_k(outputs, reference_outputs)`; numeric-tolerance match; normalized per-field match. Single- or multi-key dicts.
 - **`judges.py`** (row-level LLM-as-judge) — each calls `get_judge_model().with_structured_output(Grade).invoke(prompt)`, then maps the structured grade to `{"key", "score"|"value", "comment"}`. `value` carries categorical verdicts; `comment` carries the rationale; `feedback_config` adds UI range hints for continuous scores. Examples: faithfulness/groundedness, answer-correctness, context-relevance, multi-criteria rubric.
@@ -153,7 +153,7 @@ All evaluators follow the 0.3.45 name-resolved argument contract (params chosen 
 - **App-under-test:** a draft/summary generator whose prompt is **pulled from LangSmith Prompt Hub** (`client.pull_prompt("<owner>/summarize:<tag>")`), composed as `prompt | get_chat_model()`. Two prompt versions are pushed (`push_prompt`) so the scenario can compare them.
 - **Dataset shape:** `inputs={"document": str}`, `outputs` may be empty or hold a reference summary; the primary signal is judge-based and pairwise.
 - **Evaluators:** a reference-free **multi-criteria LLM-judge rubric** (categorical + continuous feedback — e.g. faithfulness verdict + a continuous quality score with `feedback_config`); plus a **comparative evaluator** returning `{"key", "scores": {run_id: score}}` for `evaluate_comparative()` across the two prompt versions.
-- **LangSmith features demonstrated:** **Prompt Hub versioning** (`pull_prompt` with `:tag`/commit pinning, `push_prompt`); reference-free multi-criteria rubric judge (mixed categorical + continuous feedback); **PAIRWISE comparison** via `evaluate_comparative()` (synchronous-only in 0.3.45; `randomize_order=True` to debias position-sensitive judges) and the LangSmith comparison view.
+- **LangSmith features demonstrated:** **Prompt Hub versioning** (`pull_prompt` with `:tag`/commit pinning, `push_prompt`); reference-free multi-criteria rubric judge (mixed categorical + continuous feedback); **PAIRWISE comparison** via `evaluate_comparative()` (synchronous-only in 0.8.16; `randomize_order=True` to debias position-sensitive judges) and the LangSmith comparison view.
 
 ## Cross-cutting tracks
 

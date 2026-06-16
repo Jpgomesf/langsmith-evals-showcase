@@ -1,8 +1,8 @@
 # LangSmith API Reference
 
-Concise, version-grounded cheat-sheet of the exact LangSmith evaluation APIs this repository uses. Every signature below was confirmed by Python introspection against the **installed** `langsmith==0.3.45`. Where behavior is version-sensitive it is flagged inline. Do not assume newer-docs behavior (e.g. `aevaluate_comparative`, openevals helpers) applies here.
+Concise, version-grounded cheat-sheet of the exact LangSmith evaluation APIs this repository uses. Every signature below was confirmed by Python introspection against the **installed** `langsmith==0.8.16`. Where behavior is version-sensitive it is flagged inline. Do not assume newer-docs behavior (e.g. `aevaluate_comparative`, openevals helpers) applies here.
 
-> Ground-truth note: this repo pins `langsmith==0.3.45`, `langchain==0.3.25`, `langgraph==1.1.6`. Signatures and the evaluator callable contract changed across the 0.2 → 0.3 line. Treat this file as authoritative for the pinned version only.
+> Ground-truth note: this repo pins `langsmith==0.8.16`, `langchain==1.3.9`, `langgraph==1.2.5`. Signatures and the evaluator callable contract have shifted across major versions. Treat this file as authoritative for the pinned version only.
 
 ---
 
@@ -70,7 +70,7 @@ client.create_examples(
 )
 ```
 
-> Version note: in 0.3.45 the bulk signature is keyword-only (`examples=[...]`). The older positional `create_examples(inputs=[...], outputs=[...], dataset_id=...)` form from 0.1.x is **not** the shape here.
+> Version note: in 0.8.16 the bulk signature is keyword-only (`examples=[...]`). The older positional `create_examples(inputs=[...], outputs=[...], dataset_id=...)` form from 0.1.x is **not** the shape here.
 
 ### `Client.create_example` (single)
 
@@ -115,7 +115,7 @@ evaluate(target, /, data=None, evaluators=None, summary_evaluators=None,
 - **`target`** — a callable `inputs: dict -> outputs: dict`, a `Runnable`, or an existing experiment name/id (for re-eval). The type union also accepts a 2-tuple of experiments.
 - **`data`** — dataset name, dataset id, `Dataset`, or an iterable of `Example`. Accepts the result of `list_examples(...)` for split-scoped runs.
 - **`evaluators`** — row-level evaluators (Section 5).
-- **`summary_evaluators`** — experiment-level aggregates: macro-F1, confusion matrix (Section 6).
+- **`summary_evaluators`** — experiment-level aggregates: macro-F1, precision/recall (Section 6).
 - **`num_repetitions`** (default `1`) — run each example *N* times; drives variance/noise reporting.
 - **`max_concurrency`** (default `0`, typed `Optional[int]`) — `0` is the SDK default (no caller-set parallelism cap); pass a positive int to parallelize target+evaluator calls.
 - **`experiment_prefix`** — human-readable experiment name prefix in the UI.
@@ -180,13 +180,13 @@ evaluate_comparative(
 )
 ```
 
-> **Version-critical:** in 0.3.45 there is **no `aevaluate_comparative`**. Comparative/pairwise evaluation is **synchronous only**. Note also that `evaluate_comparative`'s `max_concurrency` defaults to `5` (unlike `evaluate`'s `0`).
+> **Version-critical:** in 0.8.16 there is **no `aevaluate_comparative`**. Comparative/pairwise evaluation is **synchronous only**. Note also that `evaluate_comparative`'s `max_concurrency` defaults to `5` (unlike `evaluate`'s `0`).
 
 ---
 
 ## 5. Evaluator contracts (row-level)
 
-In 0.3.45 the evaluator-function arguments are **resolved by parameter name**. Confirmed supported argument names (pick any subset; order doesn't matter), from `supported_args` in `langsmith.evaluation.evaluator`:
+In 0.8.16 the evaluator-function arguments are **resolved by parameter name**. Confirmed supported argument names (pick any subset; order doesn't matter), from `supported_args` in `langsmith.evaluation.evaluator`:
 
 ```
 run, example, inputs, outputs, reference_outputs, attachments
@@ -212,7 +212,7 @@ Confirmed coercion rules (`_format_evaluator_result`). An evaluator may return:
 - a **`dict`** with keys from `EvaluationResult` — most importantly `key` (feedback name), `score` (numeric/bool), `value` (categorical/string), `comment` (rationale). Other accepted keys: `correction`, `evaluator_info`, `feedback_config`, `source_run_id`.
 - a **bool / int / float** → coerced to `{"score": <x>}`.
 - a **str** → coerced to `{"value": <x>}`.
-- a **`list`** (of dicts) → emits **multiple feedback keys** in one evaluator (coerced to `{"results": [...]}`). This is exactly how the `extract` scenario emits `json-validity`, per-field match, and `field-accuracy` from a single evaluator.
+- a **`list`** (of dicts) → emits **multiple feedback keys** in one evaluator (coerced to `{"results": [...]}`). This is exactly how the `extract` scenario emits `all_fields_present`, per-field match, and `field_accuracy` from a single evaluator.
 - an **`EvaluationResult`** or **`EvaluationResults`** object (`EvaluationResults` is a `dict`/`TypedDict` with a single key `results: list[EvaluationResult]`).
 
 An empty return (empty dict/list, or falsy) raises `ValueError`.
@@ -228,12 +228,12 @@ def exact_match(outputs: dict, reference_outputs: dict) -> dict:
 # Multi-key code evaluator (extract scenario)
 def field_eval(outputs: dict, reference_outputs: dict) -> list[dict]:
     pred, ref = outputs, reference_outputs
-    results = [{"key": "json-validity", "score": int(isinstance(pred, dict))}]
+    results = [{"key": "all_fields_present", "score": int(isinstance(pred, dict))}]
     for f in ("merchant", "amount", "date"):
         results.append({"key": f"field:{f}",
                         "score": int(pred.get(f) == ref.get(f))})
     hits = sum(r["score"] for r in results[1:])
-    results.append({"key": "field-accuracy", "score": hits / 3})
+    results.append({"key": "field_accuracy", "score": hits / 3})
     return results
 ```
 
@@ -272,7 +272,7 @@ Confirmed supported argument names (`supported_args` for the summary-evaluator n
 runs, examples, inputs, outputs, reference_outputs
 ```
 
-These receive **sequences** (one element per evaluated example): `outputs` is `[run.outputs, ...]`, `reference_outputs` is `[example.outputs, ...]`. Return a single `dict` / `EvaluationResult` (or `EvaluationResults`) — same coercion rules as row-level. This is where macro-F1, precision/recall, and the confusion matrix live.
+These receive **sequences** (one element per evaluated example): `outputs` is `[run.outputs, ...]`, `reference_outputs` is `[example.outputs, ...]`. Return a single `dict` / `EvaluationResult` (or `EvaluationResults`) — same coercion rules as row-level. This is where macro-F1, precision/recall, and accuracy live.
 
 ```python
 def macro_f1(outputs: list[dict], reference_outputs: list[dict]) -> dict:
@@ -349,7 +349,7 @@ Grading itself (assigning reviewers, applying the rubric) happens in the **LangS
 
 ## 9. pytest testing integration (CI regression gate)
 
-Confirmed in 0.3.45:
+Confirmed in 0.8.16:
 
 - There is **no** importable `langsmith.pytest` or `pytest_langsmith` module. The plugin is **auto-registered** via the `pytest11` entry point `langsmith_plugin -> langsmith.pytest_plugin` (verified discoverable; `langsmith.pytest_plugin` is importable; no explicit import or `-p` flag needed).
 - Mark tests with `@pytest.mark.langsmith`.
@@ -384,6 +384,13 @@ def test_classify_regression():
 
 Run with `pytest`; results stream to LangSmith as a test experiment while standard pass/fail still gates the GitHub Actions job. Pure-unit evaluator tests (no `@pytest.mark.langsmith`, `LANGSMITH_TRACING=false`) run fully offline.
 
+> **What this repo actually does.** The above is the *native* integration. This repo's
+> gates instead drive a full `evaluate()` run and assert on the aggregate feedback, marked
+> with a **custom `@pytest.mark.live`** marker — the name `langsmith` is reserved by the
+> auto-registered plugin, and `live` cleanly separates credential-needing gates (`pytest -m live`)
+> from the default offline unit tests. Both approaches are valid; the `live` route keeps the
+> dataset-level threshold logic explicit in `tests/_gate_helpers.py`.
+
 ---
 
 ## 10. Online evals (production-traffic simulator) — SDK vs UI
@@ -402,11 +409,11 @@ def classify_app(inputs: dict) -> dict:
     ...  # traced automatically when LANGSMITH_TRACING=true
 ```
 
-> Version note: `traceable` and `trace` are defined in `langsmith.run_helpers` and **re-exported at the `langsmith` top level** (both appear in `langsmith.__all__` in 0.3.45), so `from langsmith import traceable, trace` is the canonical import; `from langsmith.run_helpers import traceable` also works. The online **automation rule** is the one piece of the showcase that cannot be fully scripted — create it in the UI and capture screenshots + a deep-link in the README.
+> Version note: `traceable` and `trace` are defined in `langsmith.run_helpers` and **re-exported at the `langsmith` top level** (both appear in `langsmith.__all__` in 0.8.16), so `from langsmith import traceable, trace` is the canonical import; `from langsmith.run_helpers import traceable` also works. The online **automation rule** is the one piece of the showcase that cannot be fully scripted — create it in the UI and capture screenshots + a deep-link in the README.
 
 ---
 
-### Quick confirmation log (introspected on `langsmith==0.3.45`)
+### Quick confirmation log (introspected on `langsmith==0.8.16`)
 
 - `langsmith.evaluate is langsmith.evaluation.evaluate` → `True`; `langsmith.aevaluate` exists.
 - `langsmith.evaluation` exports `evaluate`, `aevaluate`, `evaluate_comparative` — **no** `aevaluate_comparative`.

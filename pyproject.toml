@@ -6,18 +6,20 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "João Pedro Gomes Ferreira" }]
 license = { text = "MIT" }
+# Upper bounds guard against silent major-version upgrades on re-lock; uv.lock
+# pins the exact, reproducible versions this repo was verified against.
 dependencies = [
-    "langsmith>=0.3.45",
-    "langchain>=0.3.25",
-    "langchain-core>=0.3.84",
-    "langchain-anthropic>=0.3.0",
-    "langchain-openai>=0.2.0",
-    "langgraph>=1.0.0",
-    "fastembed>=0.4.0",
-    "pydantic>=2.10",
-    "pydantic-settings>=2.7",
-    "typer>=0.15",
-    "python-dotenv>=1.0",
+    "langsmith>=0.8.16,<0.9",
+    "langchain>=1.3,<2",
+    "langchain-core>=1.4,<2",
+    "langchain-anthropic>=1.4,<2",
+    "langchain-openai>=1.3,<2",
+    "langgraph>=1.2,<2",
+    "fastembed>=0.8,<0.9",
+    "pydantic>=2.10,<3",
+    "pydantic-settings>=2.7,<3",
+    "typer>=0.15,<1",
+    "python-dotenv>=1.0,<2",
 ]
 
 [project.scripts]
