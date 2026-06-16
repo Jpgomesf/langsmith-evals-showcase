@@ -1,0 +1,20 @@
+{"inputs": {"text": "Paid $45.99 to Whole Foods on 2026-03-14 for groceries."}, "outputs": {"merchant": "Whole Foods", "amount": 45.99, "date": "2026-03-14", "category": "groceries"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Uber ride downtown, 12.30 charged on March 2, 2026."}, "outputs": {"merchant": "Uber", "amount": 12.30, "date": "2026-03-02", "category": "transport"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Netflix monthly subscription of 15.49 USD billed 2026-01-05."}, "outputs": {"merchant": "Netflix", "amount": 15.49, "date": "2026-01-05", "category": "entertainment"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Dinner at Olive Garden came to $63.20 on 2026-02-18."}, "outputs": {"merchant": "Olive Garden", "amount": 63.20, "date": "2026-02-18", "category": "dining"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Electric bill from ConEdison: 98.75, due date 2026-04-01."}, "outputs": {"merchant": "ConEdison", "amount": 98.75, "date": "2026-04-01", "category": "utilities"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Bought sneakers at Nike for 120.00 on 2026-03-22."}, "outputs": {"merchant": "Nike", "amount": 120.00, "date": "2026-03-22", "category": "shopping"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "CVS pharmacy copay, $25.00, 2026-02-09."}, "outputs": {"merchant": "CVS", "amount": 25.00, "date": "2026-02-09", "category": "health"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Spotify Premium 11.99 on 2026-01-15."}, "outputs": {"merchant": "Spotify", "amount": 11.99, "date": "2026-01-15", "category": "entertainment"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Lunch at Chipotle, 14.85, January 30 2026."}, "outputs": {"merchant": "Chipotle", "amount": 14.85, "date": "2026-01-30", "category": "dining"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Trader Joe's groceries 52.10 on 2026-03-08."}, "outputs": {"merchant": "Trader Joe's", "amount": 52.10, "date": "2026-03-08", "category": "groceries"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Lyft to the airport for $38.40 on 2026-04-11."}, "outputs": {"merchant": "Lyft", "amount": 38.40, "date": "2026-04-11", "category": "transport"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Water utility payment of 41.20 to City Water Dept on 2026-02-28."}, "outputs": {"merchant": "City Water Dept", "amount": 41.20, "date": "2026-02-28", "category": "utilities"}, "metadata": {"split": "train"}}
+{"inputs": {"text": "Amazon order totaling $89.99 placed 2026-03-19."}, "outputs": {"merchant": "Amazon", "amount": 89.99, "date": "2026-03-19", "category": "shopping"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Starbucks coffee 6.75 on Feb 14, 2026."}, "outputs": {"merchant": "Starbucks", "amount": 6.75, "date": "2026-02-14", "category": "dining"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Gym membership at Planet Fitness, 29.99, billed 2026-01-01."}, "outputs": {"merchant": "Planet Fitness", "amount": 29.99, "date": "2026-01-01", "category": "health"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Movie tickets at AMC for $32.50 on 2026-03-30."}, "outputs": {"merchant": "AMC", "amount": 32.50, "date": "2026-03-30", "category": "entertainment"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Costco run, 213.47 total, 2026-04-05."}, "outputs": {"merchant": "Costco", "amount": 213.47, "date": "2026-04-05", "category": "groceries"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Gas at Shell station, $54.00, March 25 2026."}, "outputs": {"merchant": "Shell", "amount": 54.00, "date": "2026-03-25", "category": "transport"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "Internet bill from Comcast 79.99 on 2026-02-01."}, "outputs": {"merchant": "Comcast", "amount": 79.99, "date": "2026-02-01", "category": "utilities"}, "metadata": {"split": "test"}}
+{"inputs": {"text": "New headphones from Best Buy for 149.99 on 2026-03-12."}, "outputs": {"merchant": "Best Buy", "amount": 149.99, "date": "2026-03-12", "category": "shopping"}, "metadata": {"split": "test"}}

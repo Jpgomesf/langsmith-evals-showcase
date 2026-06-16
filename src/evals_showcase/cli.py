@@ -10,12 +10,14 @@ import typer
 from dotenv import load_dotenv
 
 from .scenarios.classify import experiment as classify
+from .scenarios.extract import experiment as extract
 
 app = typer.Typer(add_completion=False, help="Run the LangSmith eval-gym scenarios.")
 
 # scenario name -> module exposing seed(client) / run_experiment(**kwargs)
 REGISTRY = {
     "classify": classify,
+    "extract": extract,
 }
 
 
