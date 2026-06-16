@@ -9,6 +9,7 @@ from __future__ import annotations
 import typer
 from dotenv import load_dotenv
 
+from .config import get_settings
 from .scenarios.agent import experiment as agent
 from .scenarios.classify import experiment as classify
 from .scenarios.extract import experiment as extract
@@ -69,6 +70,36 @@ def run(
     module = _resolve(scenario)[scenario]
     module.run_experiment(repetitions=repetitions)  # type: ignore[attr-defined]
     typer.echo(f"experiment submitted for '{scenario}' — view results in LangSmith.")
+
+
+@app.command()
+def online(
+    n: int = typer.Option(20, "-n", help="Number of traced runs to send."),
+    project: str = typer.Option("", help="Target project (default: <project>-online)."),
+) -> None:
+    """Send simulated production traffic to a project for online evaluation."""
+    from .online import simulate
+
+    count = simulate(n=n, project=project or None)
+    typer.echo(f"sent {count} traced runs — attach an online evaluator rule in LangSmith.")
+
+
+@app.command()
+def annotate(
+    project: str = typer.Option("", help="Project to sample runs from (default: configured)."),
+    queue: str = typer.Option("evals-showcase-review", help="Annotation queue name."),
+    limit: int = typer.Option(10, help="How many recent runs to enqueue."),
+) -> None:
+    """Create an annotation queue and enqueue recent runs for human review."""
+    from langsmith import Client
+
+    from .annotation import enqueue_from_project
+
+    target = project or get_settings().langsmith_project
+    created = enqueue_from_project(Client(), project=target, queue_name=queue, limit=limit)
+    typer.echo(
+        f"created queue '{queue}' ({created.id}); enqueued up to {limit} runs from '{target}'."
+    )
 
 
 if __name__ == "__main__":

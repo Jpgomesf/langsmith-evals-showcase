@@ -145,6 +145,7 @@ langsmith-evals-showcase/
 
 - **[docs/EVALUATION_STRATEGY.md](docs/EVALUATION_STRATEGY.md) — the centerpiece.** The opinionated walkthrough of *why* each scenario evaluates what it does: when to reach for heuristic vs. summary vs. LLM-judge evaluators, how to think about variance and repetitions, judge-design pitfalls, pairwise vs. absolute grading, and where `openevals` would slot in as an alternative (it is referenced, **not** a dependency — judges here are custom). Start here.
 - **[docs/LANGSMITH_API_REFERENCE.md](docs/LANGSMITH_API_REFERENCE.md)** — a concise, version-grounded cheat-sheet of the exact LangSmith APIs this repo uses, every signature confirmed by introspection against the pinned `langsmith==0.3.45`.
+- **[docs/ONLINE_AND_HUMAN_EVAL.md](docs/ONLINE_AND_HUMAN_EVAL.md)** — offline vs. online evaluation, attaching an online evaluator rule to production traffic, and using annotation queues to calibrate the automated judges with human review.
 
 ---
 
@@ -177,8 +178,8 @@ Scenarios ship **incrementally**; the shared eval machinery and the first scenar
 | `rag` — retrieval metrics + LLM-judges | ✅ |
 | `agent` — trajectory evaluation | ✅ |
 | `generate` — Prompt Hub + pairwise comparison | ✅ |
-| Online evals (simulator + automation rule) | ⏳ planned |
-| Annotation queue (SDK) | ⏳ planned |
+| Online evals (simulator + automation rule) | ✅ |
+| Annotation queue (SDK) | ✅ |
 | GitHub Actions regression gate | ✅ |
 
 ---
