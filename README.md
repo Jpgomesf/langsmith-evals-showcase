@@ -171,11 +171,11 @@ Scenarios ship **incrementally**; the shared eval machinery and the first scenar
 
 | Scenario / concern | Status |
 |---|---|
-| Shared core (config, models, embeddings, datasets, evaluator library) | 🚧 in progress |
+| Shared core (config, models, embeddings, datasets, evaluator library) | ✅ |
 | `classify` — splits, summary metrics, repetitions, CI gate | ✅ |
 | `extract` — multi-key code evaluator | ✅ |
 | `rag` — retrieval metrics + LLM-judges | ✅ |
-| `agent` — trajectory evaluation | ⏳ planned |
+| `agent` — trajectory evaluation | ✅ |
 | `generate` — Prompt Hub + pairwise comparison | ⏳ planned |
 | Online evals (simulator + automation rule) | ⏳ planned |
 | Annotation queue (SDK) | ⏳ planned |

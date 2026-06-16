@@ -9,6 +9,7 @@ from __future__ import annotations
 import typer
 from dotenv import load_dotenv
 
+from .scenarios.agent import experiment as agent
 from .scenarios.classify import experiment as classify
 from .scenarios.extract import experiment as extract
 from .scenarios.rag import experiment as rag
@@ -20,6 +21,7 @@ REGISTRY = {
     "classify": classify,
     "extract": extract,
     "rag": rag,
+    "agent": agent,
 }
 
 

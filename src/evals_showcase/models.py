@@ -11,8 +11,17 @@ from typing import Any
 
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import BaseMessage
 
 from .config import get_settings
+
+
+def message_text(message: BaseMessage) -> str:
+    """Flatten chat-message content to text (handles str or content-block lists)."""
+    content = message.content
+    if isinstance(content, str):
+        return content
+    return "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in content)
 
 
 def get_chat_model(**kwargs: Any) -> BaseChatModel:

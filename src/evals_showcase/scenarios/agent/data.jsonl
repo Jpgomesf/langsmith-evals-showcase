@@ -1,0 +1,9 @@
+{"inputs": {"question": "What is 47 times 13?"}, "outputs": {"answer": "611", "trajectory": ["calculator"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "Compute 256 divided by 8."}, "outputs": {"answer": "32", "trajectory": ["calculator"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "How many words are in this sentence: the quick brown fox jumps high?"}, "outputs": {"answer": "6", "trajectory": ["word_count"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What is 100 minus 37?"}, "outputs": {"answer": "63", "trajectory": ["calculator"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "Count the words in 'alpha beta gamma delta'."}, "outputs": {"answer": "4", "trajectory": ["word_count"]}, "metadata": {"split": "train"}}
+{"inputs": {"question": "What is 9 to the power of 3?"}, "outputs": {"answer": "729", "trajectory": ["calculator"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "What is 15 plus 27, and how many words are in 'hello there friend'?"}, "outputs": {"answer": "42 and 3 words", "trajectory": ["calculator", "word_count"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "How many words are in 'one two three four five six seven'?"}, "outputs": {"answer": "7", "trajectory": ["word_count"]}, "metadata": {"split": "test"}}
+{"inputs": {"question": "What is 144 divided by 12?"}, "outputs": {"answer": "12", "trajectory": ["calculator"]}, "metadata": {"split": "test"}}

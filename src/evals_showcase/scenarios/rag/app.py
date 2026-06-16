@@ -10,9 +10,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
-from langchain_core.messages import BaseMessage
-
-from ...models import get_chat_model
+from ...models import get_chat_model, message_text
 from .retriever import Retriever, load_corpus
 
 _SYSTEM_PROMPT = (
@@ -27,15 +25,6 @@ def _retriever() -> Retriever:
     return Retriever(load_corpus())
 
 
-def _as_text(message: BaseMessage) -> str:
-    """Flatten message content to text (handles str or block-list content)."""
-    content = message.content
-    if isinstance(content, str):
-        return content
-    parts = [b.get("text", "") if isinstance(b, dict) else str(b) for b in content]
-    return "".join(parts)
-
-
 def answer(question: str, k: int = 3) -> dict[str, Any]:
     """Run retrieval + generation, returning the answer and retrieved context."""
     docs = _retriever().retrieve(question, k=k)
@@ -44,7 +33,7 @@ def answer(question: str, k: int = 3) -> dict[str, Any]:
         [("system", _SYSTEM_PROMPT), ("human", f"Context:\n{context}\n\nQuestion: {question}")]
     )
     return {
-        "answer": _as_text(response),
+        "answer": message_text(response),
         "contexts": [doc["text"] for doc in docs],
         "doc_ids": [doc["id"] for doc in docs],
     }
