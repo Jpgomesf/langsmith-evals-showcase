@@ -25,7 +25,7 @@ jobs:
   gate:
     name: live regression gate
     runs-on: ubuntu-latest
-    # Only run where credentials exist: scheduled, manual, or pushes to main.
+    # Only relevant on schedule, manual dispatch, or pushes to main.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     needs: quality
     env:
@@ -34,12 +34,29 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
+      # Skip (green) when credentials aren't configured, so the public repo
+      # doesn't show a red ✗. Add the repo secrets to enable the live gate.
+      - name: Check for credentials
+        id: creds
+        run: |
+          if [ -n "$LANGSMITH_API_KEY" ] && [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Live gate skipped — add LANGSMITH_API_KEY and ANTHROPIC_API_KEY repo secrets to enable it."
+          fi
       - uses: actions/checkout@v4
+        if: steps.creds.outputs.ready == 'true'
       - uses: astral-sh/setup-uv@v5
+        if: steps.creds.outputs.ready == 'true'
         with:
           python-version: "3.12"
-      - run: uv sync
+      - name: Install
+        if: steps.creds.outputs.ready == 'true'
+        run: uv sync
       - name: Seed datasets
+        if: steps.creds.outputs.ready == 'true'
         run: uv run evals seed
       - name: Run live eval gates
+        if: steps.creds.outputs.ready == 'true'
         run: uv run pytest -m live
