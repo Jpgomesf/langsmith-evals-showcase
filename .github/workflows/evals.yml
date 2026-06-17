@@ -4,9 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-  schedule:
-    - cron: "0 6 * * *"   # nightly live gate
-  workflow_dispatch:
+  workflow_dispatch:   # the live gate runs only when triggered manually
 
 jobs:
   quality:
@@ -25,8 +23,8 @@ jobs:
   gate:
     name: live regression gate
     runs-on: ubuntu-latest
-    # Only relevant on schedule, manual dispatch, or pushes to main.
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    # Manual-only: trigger from Actions → evals → Run workflow when you want it.
+    if: github.event_name == 'workflow_dispatch'
     needs: quality
     env:
       LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
